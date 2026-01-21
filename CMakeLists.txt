@@ -7,6 +7,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 
 add_executable(myapp
     src/main.c
+    src/line.c
 )
 
 target_include_directories(myapp PRIVATE include)
