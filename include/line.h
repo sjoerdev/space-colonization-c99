@@ -2,7 +2,6 @@
 #define LINE_H
 
 #include "raylib.h"
-#include "simulation.h"
 #include "list.h"
 
 typedef struct Line {
@@ -12,8 +11,8 @@ typedef struct Line {
     Vector3 end;
     Vector3 direction;
     struct Line* parent;
-    List* children;
-    List* attractors;
+    List children;
+    List attractors;
 } Line;
 
 Line* CreateLine(Vector3 start, Vector3 end, Vector3 direction, Line* parent);

@@ -84,4 +84,23 @@ int list_size(List* list)
     return list->size;
 }
 
+void list_remove_list(List* list, List* to_remove)
+{
+    // remove the elements in the to_remove list from the main list
+    for (int i = list_size(list) - 1; i >= 0; i--)  // go backwards to avoid shifting
+    {
+        void* node = list_get(list, i);
+        
+        // check if node is in toRemove
+        for (int j = 0; j < list_size(to_remove); j++)
+        {
+            if (node == list_get(to_remove, j)) // comparing pointers
+            {
+                list_remove(list, i);
+                break;
+            }
+        }
+    }
+}
+
 #endif // LIST_H

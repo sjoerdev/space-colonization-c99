@@ -15,18 +15,53 @@ float attractionRange = 1;
 float killRange = 0.6f;
 float randomGrowth = 0.2f;
 
-List* nodes; // needs to be removable
-List* activeNodes;
-List* lines;
-List* extremities; // needs to be removable
+List nodes = {0};
+List lines = {0};
+List extremities = {0};
+
+float RandomValue()
+{
+    return (float)rand() / (float)RAND_MAX;
+}
+
+void GenerateNodes(int number, int radius)
+{
+    for (int i = 0; i < number; i++)
+    {
+        float alpha = RandomValue() * PI;
+        float theta = RandomValue() * PI * 2;
+        float offset = pow(RandomValue(), 1.0f / 3.0f) / 2;
+
+        Vector3 dir = {
+            cos(theta) * sin(alpha),
+            sin(theta) * sin(alpha),
+            cos(alpha)
+        };
+
+        Vector3 node = {
+            dir.x * offset * radius,
+            dir.y * offset * radius,
+            dir.z * offset * radius,
+        };
+        
+        list_add(&nodes, &node);
+    }
+}
+
+Vector3 RandomGrowthVector()
+{
+    float alpha = RandomValue() * PI;
+    float theta = RandomValue() * PI * 2;
+    Vector3 offset = { cos(theta) * sin(alpha), sin(theta) * sin(alpha), cos(alpha) };
+    return offset = (Vector3){ offset.x * randomGrowth, offset.y * randomGrowth, offset.z * randomGrowth };
+}
 
 void InitializeSimulation()
 {
     // create lists
-    list_init(nodes, sizeof(Vector3));
-    list_init(activeNodes, sizeof(int));
-    list_init(lines, sizeof(Line));
-    list_init(extremities, sizeof(Line));
+    list_init(&nodes, sizeof(Vector3));
+    list_init(&lines, sizeof(Line*));
+    list_init(&extremities, sizeof(Line*));
     
     // init random seed
     srand(0);
@@ -39,53 +74,55 @@ void InitializeSimulation()
     Vector3 first_end = { 0, passageLength, 0 };
     Line* firstLine = CreateLine(first_start, first_end, (Vector3){0,1,0}, NULL);
 
-    lines.Add(firstLine);
-    extremities.Add(firstLine);
+    list_add(&lines, firstLine);
+    list_add(&extremities, firstLine);
 }
 
 void IterateSpaceColonization()
 {
     // cleanup leftover nodes and return
-    if (nodes.Count > 0 && nodes.Count <= nodesLeft) nodes.Clear();
-    if (nodes.Count == 0) return;
+    if (list_size(&nodes) > 0 && list_size(&nodes) <= nodesLeft) list_clear(&nodes);
+    if (list_size(&nodes) == 0) return;
 
     // remove nodes in killrange
-    List<Vector3> toRemove = new List<Vector3>();
-    for (int i = 0; i < nodes.Count; i++)
+    List nodes_to_remove = {0};
+    list_init(&nodes_to_remove, sizeof(Vector3*));
+    for (int i = 0; i < list_size(&nodes); i++)
     {
-        for (int j = 0; j < lines.Count; j++)
+        for (int j = 0; j < list_size(&lines); j++)
         {
-            float distance = Vector3.Distance(nodes[i], lines[j].end);
-            if (distance < killRange) toRemove.Add(nodes[i]);
+            float distance = Vector3Distance(*(Vector3*)list_get(&nodes, i), ((Line*)list_get(&lines, j))->end);
+            if (distance < killRange) list_add(&nodes_to_remove, list_get(&nodes, i));
         }
     }
-    foreach (var node in toRemove) nodes.Remove(node);
+    list_remove_list(&nodes, &nodes_to_remove);
 
     // reset attractors and active nodes
-    for (int i = 0; i < lines.Count; i++) lines[i].attractors.Clear();
-    activeNodesAmount.Clear();
+    for (int i = 0; i < list_size(&lines); i++)
+    {
+        Line* line = list_get(&lines, i);
+        list_clear(&line->attractors);
+    }
 
     // calculate active nodes and attractors
-    for (int i = 0; i < nodes.Count; i++)
+    for (int i = 0; i < list_size(&nodes); i++)
     {
         float lastDist = 10000;
-        Passage closest = null;
+        Line* closest = NULL;
 
-        for (int j = 0; j < lines.Count; j++) 
+        for (int j = 0; j < list_size(&lines); j++) 
         {
-            float distance = Vector3.Distance(lines[j].end, nodes[i]);
+            Line* line = list_get(&lines, j);
+            Vector3* node = list_get(&nodes, i);
+            float distance = Vector3Distance(line->end, *node);
             if (distance < attractionRange && distance < lastDist) 
             {
-                closest = lines[j];
+                closest = line;
                 lastDist = distance;
             }
         }
 
-        if (closest != null)
-        {
-            closest.attractors.Add(nodes[i]);
-            activeNodesAmount.Add(i);
-        }
+        if (closest != NULL) list_add(&closest->attractors, list_get(&nodes, 1));
     }
 
     // if there are nodes in attraction range
@@ -138,43 +175,6 @@ void IterateSpaceColonization()
             }
         }
     }
-}
-
-void GenerateNodes(int number, int radius)
-{
-    for (int i = 0; i < number; i++)
-    {
-        float alpha = RandomValue() * PI;
-        float theta = RandomValue() * PI * 2;
-        float offset = pow(RandomValue(), 1.0f / 3.0f) / 2;
-
-        Vector3 dir = {
-            cos(theta) * sin(alpha),
-            sin(theta) * sin(alpha),
-            cos(alpha)
-        };
-
-        Vector3 node = {
-            dir.x * offset * radius,
-            dir.y * offset * radius,
-            dir.z * offset * radius,
-        };
-        
-        list_add(nodes, (void*)&node);
-    }
-}
-
-float RandomValue()
-{
-    return (float)rand() / (float)RAND_MAX;
-}
-
-Vector3 RandomGrowthVector()
-{
-    float alpha = RandomValue() * PI;
-    float theta = RandomValue() * PI * 2;
-    Vector3 offset = { cos(theta) * sin(alpha), sin(theta) * sin(alpha), cos(alpha) };
-    return offset = (Vector3){ offset.x * randomGrowth, offset.y * randomGrowth, offset.z * randomGrowth };
 }
 
 #endif // SIMULATION_H
