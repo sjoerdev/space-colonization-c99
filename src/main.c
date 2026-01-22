@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "raylib.h"
+#include "simulation.h"
 
 int main(void)
 {
@@ -21,6 +22,8 @@ int main(void)
     };
 
     Vector3 cubePosition = {0.0f, 0.0f, 0.0f};
+
+    InitializeSimulation();
 
     while (!WindowShouldClose())
     {

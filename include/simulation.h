@@ -4,27 +4,30 @@
 #include <stdlib.h>
 #include "raylib.h"
 #include "raymath.h"
+#include "list.h"
 #include "line.h"
 
-#define MAX_NODES 1000
-#define MAX_LINES 1000
-
 // Space Colonization Settings
-int initialNodeAmount = MAX_NODES;
+int initialNodeAmount = 1000;
 int nodesLeft = 0;
 float passageLength = 0.1f;
 float attractionRange = 1;
 float killRange = 0.6f;
 float randomGrowth = 0.2f;
 
-Vector3 nodes[MAX_NODES]; // needs to be removable
-int activeNodes[MAX_NODES];
+List* nodes; // needs to be removable
+List* activeNodes;
+List* lines;
+List* extremities; // needs to be removable
 
-Line* lines[MAX_LINES];
-Line* extremities[MAX_LINES]; // needs to be removable
-
-void Initialize()
+void InitializeSimulation()
 {
+    // create lists
+    list_init(nodes, sizeof(Vector3));
+    list_init(activeNodes, sizeof(int));
+    list_init(lines, sizeof(Line));
+    list_init(extremities, sizeof(Line));
+    
     // init random seed
     srand(0);
 
@@ -32,8 +35,9 @@ void Initialize()
     GenerateNodes(initialNodeAmount, 5);
 
     // create entrance
-    Vector3 entrance = {0};
-    Line* firstLine = CreateLine(entrance, Vector3Add(entrance, (Vector3){ 0, passageLength, 0 })
+    Vector3 first_start = {0};
+    Vector3 first_end = { 0, passageLength, 0 };
+    Line* firstLine = CreateLine(first_start, first_end, (Vector3){0,1,0}, NULL);
 
     lines.Add(firstLine);
     extremities.Add(firstLine);
@@ -155,8 +159,8 @@ void GenerateNodes(int number, int radius)
             dir.y * offset * radius,
             dir.z * offset * radius,
         };
-
-        nodes.Add(node);
+        
+        list_add(nodes, (void*)&node);
     }
 }
 

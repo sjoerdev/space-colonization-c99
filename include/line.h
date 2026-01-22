@@ -3,6 +3,7 @@
 
 #include "raylib.h"
 #include "simulation.h"
+#include "list.h"
 
 typedef struct Line {
     bool active;
@@ -10,9 +11,9 @@ typedef struct Line {
     Vector3 start;
     Vector3 end;
     Vector3 direction;
-    Line* parent;
-    Line* children[MAX_LINES];
-    Line* attractors[MAX_LINES];
+    struct Line* parent;
+    List* children;
+    List* attractors;
 } Line;
 
 Line* CreateLine(Vector3 start, Vector3 end, Vector3 direction, Line* parent);
