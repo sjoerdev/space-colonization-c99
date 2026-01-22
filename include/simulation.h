@@ -33,10 +33,10 @@ void Initialize()
 
     // create entrance
     Vector3 entrance = {0};
-    Line* firstLine = CreateLine(entrance, Vector3Add(entrance, { 0, passageLength, 0 })
+    Line* firstLine = CreateLine(entrance, Vector3Add(entrance, (Vector3){ 0, passageLength, 0 })
 
-    lines.Add(firstPassage);
-    extremities.Add(firstPassage);
+    lines.Add(firstLine);
+    extremities.Add(firstLine);
 }
 
 void IterateSpaceColonization()
@@ -150,7 +150,11 @@ void GenerateNodes(int number, int radius)
             cos(alpha)
         };
 
-        Vector3 node = dir * offset * radius;
+        Vector3 node = {
+            dir.x * offset * radius,
+            dir.y * offset * radius,
+            dir.z * offset * radius,
+        };
 
         nodes.Add(node);
     }
@@ -166,7 +170,7 @@ Vector3 RandomGrowthVector()
     float alpha = RandomValue() * PI;
     float theta = RandomValue() * PI * 2;
     Vector3 offset = { cos(theta) * sin(alpha), sin(theta) * sin(alpha), cos(alpha) };
-    return offset * randomGrowth;
+    return offset = (Vector3){ offset.x * randomGrowth, offset.y * randomGrowth, offset.z * randomGrowth };
 }
 
 #endif // SIMULATION_H
