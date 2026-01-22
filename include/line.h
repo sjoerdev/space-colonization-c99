@@ -1,5 +1,5 @@
-#ifndef PASSAGE_H
-#define PASSAGE_H
+#ifndef LINE_H
+#define LINE_H
 
 #include "raylib.h"
 #include "simulation.h"
@@ -12,11 +12,9 @@ typedef struct Line {
     Vector3 direction;
     Line* parent;
     Line* children[MAX_LINES];
-    Vector3* attractors[MAX_NODES];
-    int childrenAmount;
-    int attractorsAmount;
+    Line* attractors[MAX_LINES];
 } Line;
 
 Line* CreateLine(Vector3 start, Vector3 end, Vector3 direction, Line* parent);
 
-#endif // PASSAGE_H
+#endif // LINE_H

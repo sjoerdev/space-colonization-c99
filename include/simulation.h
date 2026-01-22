@@ -19,12 +19,9 @@ float randomGrowth = 0.2f;
 
 Vector3 nodes[MAX_NODES]; // needs to be removable
 int activeNodes[MAX_NODES];
-int removedNodes[MAX_NODES];
 
 Line* lines[MAX_LINES];
 Line* extremities[MAX_LINES]; // needs to be removable
-int linesAmount = 0;
-int extremitiesAmount = 0;
 
 void Initialize()
 {
