@@ -1,11 +1,9 @@
 #include "line.h"
 
 #include <stdlib.h>
-#include <stdio.h>
-
 #include "raylib.h"
 
-Line* CreateLineHeap(Vector3 start, Vector3 end, Vector3 direction, Line* parent)
+Line* CreateLine(Vector3 start, Vector3 end, Vector3 direction, Line* parent)
 {
     Line* line = (Line*)malloc(sizeof(line));
     list_init(&line->children, sizeof(Line*));

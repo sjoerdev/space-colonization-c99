@@ -5,14 +5,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct List
+typedef struct List
 {
     void *data;         // pointer to allocated memory
     int element_size;   // size of each element
     int size;           // number of elements currently in list
     int capacity;       // total allocated capacity
-};
-typedef struct List List;
+} List;
 
 void list_init(List* list, int element_size);
 void list_free(List* list);
