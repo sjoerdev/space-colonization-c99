@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string>
 
 #include "raylib.h"
-#include "simulation.h"
+#include "simulation.hpp"
 
 int main(void)
 {
@@ -13,13 +14,12 @@ int main(void)
 
     InitWindow(screenWidth, screenHeight, "window");
 
-    Camera3D camera = {
-        .position = (Vector3){0.0f, 1.0f, 4.0f},
-        .target = (Vector3){0.0f, 0.0f, 0.0f},
-        .up = (Vector3){0.0f, 1.0f, 0.0f},
-        .fovy = 60.0f,
-        .projection = CAMERA_PERSPECTIVE
-    };
+    Camera3D camera;
+    camera.position = {0.0f, 1.0f, 4.0f};
+    camera.target = {0.0f, 0.0f, 0.0f};
+    camera.up = {0.0f, 1.0f, 0.0f};
+    camera.fovy = 60.0f;
+    camera.projection = CAMERA_PERSPECTIVE;
 
     InitializeSimulation();
 
@@ -38,18 +38,18 @@ int main(void)
                 DrawGrid(10, 1.0f);
 
                 // draw lines
-                for (int i = 0; i < list_size(&lines); i++)
+                for (int i = 0; i < lines.size(); i++)
                 {
-                    Line* line = list_get(&lines, i);
+                    Line* line = lines[i];
                     DrawLine3D(line->start, line->end, BLUE);
                 }
 
             EndMode3D();
 
             // draw nodes
-            for (int i = 0; i < list_size(&nodes); i++)
+            for (int i = 0; i < nodes.size(); i++)
             {
-                Vector3* node = list_get(&nodes, i);
+                Vector3* node = nodes[i];
                 Vector2 screenSpace = GetWorldToScreen(*node, camera);
                 DrawCircleV(screenSpace, 2, RED);
             }
