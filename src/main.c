@@ -21,13 +21,13 @@ int main(void)
         .projection = CAMERA_PERSPECTIVE
     };
 
-    Vector3 cubePosition = {0.0f, 0.0f, 0.0f};
-
     InitializeSimulation();
 
     while (!WindowShouldClose())
     {
         if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) UpdateCamera(&camera, CAMERA_THIRD_PERSON);
+
+        if (IsKeyPressed(KEY_F)) IterateSpaceColonization();
         
         BeginDrawing();
 
@@ -35,11 +35,24 @@ int main(void)
 
             BeginMode3D(camera);
 
-                DrawCube(cubePosition, 2.0f, 2.0f, 2.0f, RED);
-
                 DrawGrid(10, 1.0f);
 
+                // draw lines
+                for (int i = 0; i < list_size(&lines); i++)
+                {
+                    Line* line = list_get(&lines, i);
+                    DrawLine3D(line->start, line->end, BLUE);
+                }
+
             EndMode3D();
+
+            // draw nodes
+            for (int i = 0; i < list_size(&nodes); i++)
+            {
+                Vector3* node = list_get(&nodes, i);
+                Vector2 screenSpace = GetWorldToScreen(*node, camera);
+                DrawCircleV(screenSpace, 2, RED);
+            }
 
             DrawFPS(10, 10);
 
