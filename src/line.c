@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+
 #include "raylib.h"
 
 Line* CreateLineHeap(Vector3 start, Vector3 end, Vector3 direction, Line* parent)
